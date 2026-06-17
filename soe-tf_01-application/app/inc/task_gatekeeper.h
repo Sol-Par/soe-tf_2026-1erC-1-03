@@ -32,8 +32,8 @@
  * @author : Juan Manuel Cruz <jcruz@fi.uba.ar> <jcruz@frba.utn.edu.ar>
  */
 
-#ifndef TASK_A_H_
-#define TASK_A_H_
+#ifndef TASK_GATEKEEPER_H_
+#define TASK_GATEKEEPER_H_
 
 /********************** CPP guard ********************************************/
 #ifdef __cplusplus
@@ -49,13 +49,13 @@ extern "C" {
 /********************** external data declaration ****************************/
 
 /********************** external functions declaration ***********************/
-extern void task_a(void *parameters);
+extern void task_gatekeeper(void *parameters);
 
 /********************** End of CPP guard *************************************/
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* TASK_A_H_ */
+#endif /* TASK_GATEKEEPER_H_ */
 
 /********************** end of file ******************************************/
