@@ -42,6 +42,7 @@
 #include "dwt.h"
 
 /* Application & Tasks includes */
+#include "app.h"
 #include "board.h"
 #include "app_it.h"
 #include "task_a.h"
@@ -67,14 +68,14 @@ const char *p_app__	= "(Source => TA149 - Sistemas Operativos Embebidos)";
 /********************** external data declaration ****************************/
 uint32_t g_app_cnt;
 uint32_t g_app_task_cnt;
-uint32_t g_app_tick_cnt;
+volatile uint32_t g_app_tick_cnt;
 uint32_t g_task_idle_cnt;
 uint32_t g_app_stack_overflow_cnt;
 
 uint32_t g_tasks_cnt;
 
 /* Declare a variable of type QueueHandle_t. This is used to reference queues*/
-
+QueueHandle_t h_display_queue = NULL;
 /* Declare a variable of type SemaphoreHandle_t (binary or counting) or mutex.
  * This is used to reference the semaphore that is used to synchronize a thread
  * with other thread or to ensure mutual exclusive access to...*/
@@ -82,6 +83,7 @@ uint32_t g_tasks_cnt;
 /* Declare a variable of type TaskHandle_t. This is used to reference threads. */
 TaskHandle_t h_task_a;
 TaskHandle_t h_task_b;
+TaskHandle_t h_task_gatekeeper;
 
 /********************** external functions definition ************************/
 void app_init(void)
@@ -110,9 +112,22 @@ void app_init(void)
      * successfully.
      *
      * Add queue or semaphore (binary or counting) or mutex to registry. */
+	h_display_queue = xQueueCreate(8, sizeof(display_msg_t));
+	configASSERT(h_display_queue != NULL);
 
 	/* Add threads, ... */
     BaseType_t ret;
+
+    /* Gatekeeper Task thread at priority 2 */
+    ret = xTaskCreate(task_b,							/* Pointer to the function thats implement the task. */
+					  "Gatekeeper Task",							/* Text name for the task. This is to facilitate debugging only. */
+					  (configMINIMAL_STACK_SIZE),		/* Stack depth in words. */
+					  NULL,								/* We are not using the task parameter. */
+					  (tskIDLE_PRIORITY + 2ul),			/* This task will run at priority 2. */
+					  &h_task_gatekeeper);				/* We are using a variable as task handle. */
+
+    /* Check the thread was created successfully. */
+    configASSERT(pdPASS == ret);
 
     /* Task A thread at priority 1 */
     ret = xTaskCreate(task_a,							/* Pointer to the function thats implement the task. */
@@ -135,6 +150,7 @@ void app_init(void)
 
     /* Check the thread was created successfully. */
     configASSERT(pdPASS == ret);
+
 
     /* Total amount of heap space that remains unallocated. Is also available
      * with xFreeBytesRemaining variable for heap management schemes 2 to 5.

@@ -68,15 +68,29 @@ void task_b(void *parameters)
 	/*  Declare & Initialize Task Function variables */
 	g_task_b_cnt = G_TASK_B_CNT_INI;
 
+	// Declaramos el mensaje que vamos a enviar
+	display_msg_t mensaje;
+
 	/* Print out: Task Initialized */
 	LOGGER_INFO(" ");
 	LOGGER_INFO("  %s is running - Tick [mS] = %lu", pcTaskGetName(NULL), xTaskGetTickCount());
 
 	/* As per most tasks, this task is implemented in an infinite loop. */
 	for (;;)
-    {
+	{
 		/* Update Task Counter */
 		g_task_b_cnt++;
+
+		mensaje.x = 0; // Columna 0
+		mensaje.y = 1; // Fila 2
+
+		snprintf(mensaje.text, MAX_MSG_LEN, "Task B Cnt: %lu    ", g_task_b_cnt);
+
+		// 2. Enviamos el mensaje a la cola (espera máxima de 10 ticks si está llena)
+		if (xQueueSend(h_display_queue, &mensaje, pdMS_TO_TICKS(10)) == pdPASS)
+		{
+			LOGGER_INFO("Task B: Mensaje encolado");
+		}
 
     	/* Print out: Wait 250mS */
 		LOGGER_INFO(p_task_b_wait_250mS);

@@ -44,8 +44,14 @@ extern "C" {
 
 /********************** macros ***********************************************/
 #define TASK_QTY 2ul
-
+#define MAX_MSG_LEN 21
 /********************** typedef **********************************************/
+
+typedef struct {
+    uint8_t x;
+    uint8_t y;
+    char text[MAX_MSG_LEN];
+} display_msg_t;
 
 /********************** external data declaration ****************************/
 extern uint32_t g_app_cnt;
@@ -55,6 +61,7 @@ extern uint32_t g_task_idle_cnt;
 extern uint32_t g_app_stack_overflow_cnt;
 
 /* Declare a variable of type QueueHandle_t. This is used to reference queues*/
+extern QueueHandle_t h_display_queue;
 
 /* Declare a variable of type SemaphoreHandle_t (binary or counting) or mutex.
  * This is used to reference the semaphore that is used to synchronize a thread

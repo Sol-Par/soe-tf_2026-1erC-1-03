@@ -68,6 +68,9 @@ void task_a(void *parameters)
 	/*  Declare & Initialize Task Function variables */
 	g_task_a_cnt = G_TASK_A_CNT_INI;
 
+	// Declaramos el mensaje que vamos a enviar
+	display_msg_t mensaje;
+
 	/* Print out: Task Initialized */
 	LOGGER_INFO(" ");
 	LOGGER_INFO("  %s is running - Tick [mS] = %lu", pcTaskGetName(NULL), xTaskGetTickCount());
@@ -77,6 +80,18 @@ void task_a(void *parameters)
 	{
 		/* Update Task Counter */
 		g_task_a_cnt++;
+
+
+		mensaje.x = 0; // Columna 0
+		mensaje.y = 0; // Fila 1
+
+		snprintf(mensaje.text, MAX_MSG_LEN, "Task A Cnt: %lu    ", g_task_a_cnt);
+
+		// 2. Enviamos el mensaje a la cola (espera máxima de 10 ticks si está llena)
+		if (xQueueSend(h_display_queue, &mensaje, pdMS_TO_TICKS(10)) == pdPASS)
+		{
+			LOGGER_INFO("Task A: Mensaje encolado");
+		}
 
     	/* Print out: Wait 250mS */
 		LOGGER_INFO(p_task_a_wait_250mS);
