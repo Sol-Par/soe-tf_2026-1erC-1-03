@@ -68,6 +68,10 @@ void task_gatekeeper(void *parameters)
 	/*  Declare & Initialize Task Function variables */
 	g_task_gatekeeper_cnt = G_TASK_GATEKEEPER_CNT_INI;
 
+	display_msg_t mensaje;
+
+	displayInit(DISPLAY_CONNECTION_I2C_PCF8574_IO_EXPANDER);
+
 	/* Print out: Task Initialized */
 	LOGGER_INFO(" ");
 	LOGGER_INFO("  %s is running - Tick [mS] = %lu", pcTaskGetName(NULL), xTaskGetTickCount());
@@ -78,22 +82,14 @@ void task_gatekeeper(void *parameters)
 		/* Update Task Counter */
 		g_task_gatekeeper_cnt++;
 
-		display_msg_t mensaje;
-
-		displayInit(DISPLAY_CONNECTION_I2C_PCF8574_IO_EXPANDER);
-
-		LOGGER_INFO("Gatekeeper running");
-
-		for (;;)
+		// 1. Nos bloqueamos INDEFINIDAMENTE hasta que llegue un mensaje (portMAX_DELAY)
+		// La CPU no pierde tiempo acá: si la cola está vacía, el RTOS corre otras tareas.
+		if (xQueueReceive(h_display_queue, &mensaje, portMAX_DELAY) == pdPASS)
 		{
-			// 1. Nos bloqueamos INDEFINIDAMENTE hasta que llegue un mensaje (portMAX_DELAY)
-			// La CPU no pierde tiempo acá: si la cola está vacía, el RTOS corre otras tareas.
-			if (xQueueReceive(h_display_queue, &mensaje, portMAX_DELAY) == pdPASS)
-			{
-				displayCharPositionWrite(mensaje.x, mensaje.y);
-				displayStringWrite(mensaje.text);
-			}
+			displayCharPositionWrite(mensaje.x, mensaje.y);
+			displayStringWrite(mensaje.text);
 		}
+
 	}
 }
 
