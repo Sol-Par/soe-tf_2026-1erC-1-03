@@ -16,12 +16,14 @@ El desarrollo consistió en vincular las rutinas de servicio de interrupción (I
 Para lograr que la tarea administradora se bloquee y despierte a demanda del hardware, se introdujo un nuevo recurso del sistema operativo:
 * **Semáforo Binario (`h_i2c_tx_sem`):** Se instanció un semáforo binario durante la inicialización de la aplicación (`app_init`). Este elemento actúa como una señal de finalización entre la interrupción del hardware y la *Gatekeeper Task*.
 
-### 2.2. Modificación del Driver de Bajo Nivel
+### 2.2. Modificación de la Tarea Gatekeeper:
+Inmediatamente después de invocar las funciones de escritura del display, el Gatekeeper ejecuta de forma explícita la función `xSemaphoreTake(h_i2c_tx_sem, portMAX_DELAY)`. Al encontrarse el semáforo vacío, la tarea pasa al estado **Blocked**, permitiendo que FreeRTOS asigne el uso de la CPU a las tareas productoras (Task A y Task B) mientras el hardware transmite los datos en segundo plano.
+
+### 2.3. Modificación del Driver de Bajo Nivel
 La capa de abstracción del hardware (`display.c`) fue modificada para operar de manera no bloqueante:
 1. Se reemplazó la llamada a `HAL_I2C_Master_Transmit` por su variante asíncrona `HAL_I2C_Master_Transmit_IT`. Esta función delega la transmisión al periférico I2C y retorna el control a la CPU de manera casi instantánea.
-2. Inmediatamente después de iniciar la transmisión, el driver invoca la función `xSemaphoreTake(h_i2c_tx_sem, portMAX_DELAY)`. Como el semáforo se encuentra vacío, la *Gatekeeper Task* pasa al estado **Blocked**, permitiendo que FreeRTOS asigne la CPU a las tareas de aplicación (Task A y Task B).
 
-### 2.3. Rutina de Servicio de Interrupción (ISR)
+### 2.4. Rutina de Servicio de Interrupción (ISR)
 Se implementó el *Callback* de interrupción del HAL de STM32 (`HAL_I2C_MasterTxCpltCallback`). Cuando el periférico I2C finaliza el envío del último bit por hardware, se dispara esta interrupción, ejecutando las siguientes acciones:
 1. **Notificación:** Se invoca a la función `xSemaphoreGiveFromISR()`, la cual "entrega" el semáforo binario, indicando que la transmisión finalizó.
 2. **Cambio de Contexto Forzado:** Se utilizó la macro `portYIELD_FROM_ISR()` para evaluar si la tarea recién desbloqueada (Gatekeeper) tiene mayor prioridad que la tarea que fue interrumpida. De ser así, se fuerza un cambio de contexto inmediato al salir de la ISR, minimizando la latencia de respuesta.
