@@ -35,7 +35,6 @@
 /********************** inclusions *******************************************/
 /* Project includes */
 #include "main.h"
-#include "cmsis_os.h"
 
 /* Demo includes */
 #include "logger.h"
@@ -43,14 +42,12 @@
 
 /* Application & Tasks includes */
 #include "board.h"
+
+#include "FreeRTOS.h"
+#include "semphr.h"
 #include "app.h"
-#include "display.h"
 
 /********************** macros and definitions *******************************/
-#define G_TASK_GATEKEEPER_CNT_INI	0ul
-
-#define TASK_GATEKEEPER_DEL_ZERO		(pdMS_TO_TICKS(0ul))
-#define TASK_GATEKEEPER_DEL_MAX			(pdMS_TO_TICKS(250ul))
 
 /********************** internal data declaration ****************************/
 
@@ -59,43 +56,36 @@
 /********************** internal data definition *****************************/
 
 /********************** external data declaration ****************************/
-uint32_t g_task_gatekeeper_cnt;
+/* Importamos el handler de la I2C que genera el STM32CubeMX (suele ser hi2c1) */
+extern I2C_HandleTypeDef hi2c1;
 
 /********************** external functions definition ************************/
-/* Task thread */
-void task_gatekeeper(void *parameters)
+void app_it_init(void)
 {
-	/*  Declare & Initialize Task Function variables */
-	g_task_gatekeeper_cnt = G_TASK_GATEKEEPER_CNT_INI;
+	/* Init to be done */
 
-	display_msg_t mensaje;
+	/* Protect shared resource */
+	__asm("CPSID i");	/* disable interrupts */
 
-	displayInit(DISPLAY_CONNECTION_I2C_PCF8574_IO_EXPANDER);
-
-    xSemaphoreTake(h_i2c_tx_sem, 0);
-
-	/* Print out: Task Initialized */
-	LOGGER_INFO(" ");
-	LOGGER_INFO("  %s is running - Tick [mS] = %lu", pcTaskGetName(NULL), xTaskGetTickCount());
-
-	/* As per most tasks, this task is implemented in an infinite loop. */
-	for (;;)
-	{
-		/* Update Task Counter */
-		g_task_gatekeeper_cnt++;
-
-
-		if (xQueueReceive(h_display_queue, &mensaje, portMAX_DELAY) == pdPASS)
-		{
-			displayCharPositionWrite(mensaje.x, mensaje.y);
-			displayStringWrite(mensaje.p_text);
-
-            xSemaphoreTake(h_i2c_tx_sem, portMAX_DELAY);
-            // Si el código llegó a esta línea, significa que el IT ya termino y liberó.
-            vPortFree(mensaje.p_text);
-		}
-
-	}
+	__asm("CPSIE i");	/* enable interrupts */
 }
+
+/* Esta función la llama la HAL cuando termina una transmisión por IT (_IT) */
+void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+    /* Verificamos que la interrupción sea de la I2C1 */
+    if (hi2c->Instance == I2C1)
+    {
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+
+        /* Devolvemos el semáforo para despertar a la Gatekeeper Task */
+        xSemaphoreGiveFromISR(h_i2c_tx_sem, &xHigherPriorityTaskWoken);
+
+        /* Si una tarea de mayor prioridad se despertó, forzamos el cambio de contexto */
+        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    }
+}
+
+
 
 /********************** end of file ******************************************/

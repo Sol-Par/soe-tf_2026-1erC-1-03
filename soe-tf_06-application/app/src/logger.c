@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2026 Juan Manuel Cruz <jcruz@fi.uba.ar> <jcruz@frba.utn.edu.ar>.
+ * Copyright (c) 2026 Sebastian Bedin <sebabedin@gmail.com>.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,28 +29,22 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @author : Juan Manuel Cruz <jcruz@fi.uba.ar> <jcruz@frba.utn.edu.ar>
+ * @author : Sebastian Bedin <sebabedin@gmail.com>
  */
 
 /********************** inclusions *******************************************/
-/* Project includes */
+
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+
 #include "main.h"
 #include "cmsis_os.h"
 
-/* Demo includes */
 #include "logger.h"
-#include "dwt.h"
-
-/* Application & Tasks includes */
-#include "board.h"
-#include "app.h"
-#include "display.h"
 
 /********************** macros and definitions *******************************/
-#define G_TASK_GATEKEEPER_CNT_INI	0ul
-
-#define TASK_GATEKEEPER_DEL_ZERO		(pdMS_TO_TICKS(0ul))
-#define TASK_GATEKEEPER_DEL_MAX			(pdMS_TO_TICKS(250ul))
 
 /********************** internal data declaration ****************************/
 
@@ -58,44 +52,29 @@
 
 /********************** internal data definition *****************************/
 
-/********************** external data declaration ****************************/
-uint32_t g_task_gatekeeper_cnt;
+/********************** external data definition *****************************/
+
+#if 1 == LOGGER_CONFIG_ENABLE
+static char logger_msg_buffer_[LOGGER_CONFIG_MAXLEN];
+char* const logger_msg = logger_msg_buffer_;
+int logger_msg_len;
+#endif
+
+/********************** internal functions definition ************************/
 
 /********************** external functions definition ************************/
-/* Task thread */
-void task_gatekeeper(void *parameters)
+
+#if 1 == LOGGER_CONFIG_USE_SEMIHOSTING
+void logger_log_print_(char* const msg)
 {
-	/*  Declare & Initialize Task Function variables */
-	g_task_gatekeeper_cnt = G_TASK_GATEKEEPER_CNT_INI;
-
-	display_msg_t mensaje;
-
-	displayInit(DISPLAY_CONNECTION_I2C_PCF8574_IO_EXPANDER);
-
-    xSemaphoreTake(h_i2c_tx_sem, 0);
-
-	/* Print out: Task Initialized */
-	LOGGER_INFO(" ");
-	LOGGER_INFO("  %s is running - Tick [mS] = %lu", pcTaskGetName(NULL), xTaskGetTickCount());
-
-	/* As per most tasks, this task is implemented in an infinite loop. */
-	for (;;)
-	{
-		/* Update Task Counter */
-		g_task_gatekeeper_cnt++;
-
-
-		if (xQueueReceive(h_display_queue, &mensaje, portMAX_DELAY) == pdPASS)
-		{
-			displayCharPositionWrite(mensaje.x, mensaje.y);
-			displayStringWrite(mensaje.p_text);
-
-            xSemaphoreTake(h_i2c_tx_sem, portMAX_DELAY);
-            // Si el código llegó a esta línea, significa que el IT ya termino y liberó.
-            vPortFree(mensaje.p_text);
-		}
-
-	}
+	printf(msg);
+	fflush(stdout);
 }
+#else
+void logger_log_print_(char* const msg)
+{
+    return;
+}
+#endif
 
 /********************** end of file ******************************************/

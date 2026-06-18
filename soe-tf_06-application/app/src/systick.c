@@ -35,22 +35,8 @@
 /********************** inclusions *******************************************/
 /* Project includes */
 #include "main.h"
-#include "cmsis_os.h"
-
-/* Demo includes */
-#include "logger.h"
-#include "dwt.h"
-
-/* Application & Tasks includes */
-#include "board.h"
-#include "app.h"
-#include "display.h"
 
 /********************** macros and definitions *******************************/
-#define G_TASK_GATEKEEPER_CNT_INI	0ul
-
-#define TASK_GATEKEEPER_DEL_ZERO		(pdMS_TO_TICKS(0ul))
-#define TASK_GATEKEEPER_DEL_MAX			(pdMS_TO_TICKS(250ul))
 
 /********************** internal data declaration ****************************/
 
@@ -59,43 +45,47 @@
 /********************** internal data definition *****************************/
 
 /********************** external data declaration ****************************/
-uint32_t g_task_gatekeeper_cnt;
 
 /********************** external functions definition ************************/
-/* Task thread */
-void task_gatekeeper(void *parameters)
+/* Provides a blocking delay in microseconds using the SysTick timer */
+void systick_delay_us(uint32_t delay_us)
 {
-	/*  Declare & Initialize Task Function variables */
-	g_task_gatekeeper_cnt = G_TASK_GATEKEEPER_CNT_INI;
+	uint32_t start, current, target, elapsed;
 
-	display_msg_t mensaje;
+    if (0 == delay_us)
+    	return;
 
-	displayInit(DISPLAY_CONNECTION_I2C_PCF8574_IO_EXPANDER);
+    /* Get the start value of the SysTick counter */
+	start = SysTick->VAL;
 
-    xSemaphoreTake(h_i2c_tx_sem, 0);
+	/* Calculate the total number of SysTick counts required for the delay */
+	target = delay_us * (SystemCoreClock / 1000000UL);
 
-	/* Print out: Task Initialized */
-	LOGGER_INFO(" ");
-	LOGGER_INFO("  %s is running - Tick [mS] = %lu", pcTaskGetName(NULL), xTaskGetTickCount());
+    /* Loop until the required counts have elapsed */
+    while (1)
+    {
+        /* Get the current value of the SysTick counter */
+    	current = SysTick->VAL;
 
-	/* As per most tasks, this task is implemented in an infinite loop. */
-	for (;;)
-	{
-		/* Update Task Counter */
-		g_task_gatekeeper_cnt++;
+        /* Handle the case where the SysTick counter wraps around, */
+        /* counts down to 0 and reloads */
+        if (current <= start)
+        {
+        	elapsed = start - current;
+        }
+        else
+        {
+            /* Counter wrapped around, */
+        	/* add the reload value to account for the wrap */
+        	elapsed = SysTick->LOAD + start - current;
+        }
 
-
-		if (xQueueReceive(h_display_queue, &mensaje, portMAX_DELAY) == pdPASS)
-		{
-			displayCharPositionWrite(mensaje.x, mensaje.y);
-			displayStringWrite(mensaje.p_text);
-
-            xSemaphoreTake(h_i2c_tx_sem, portMAX_DELAY);
-            // Si el código llegó a esta línea, significa que el IT ya termino y liberó.
-            vPortFree(mensaje.p_text);
-		}
-
-	}
+        /* Exit the loop when the desired delay is reached */
+        if (elapsed >= target)
+        {
+        	break;
+        }
+    }
 }
 
 /********************** end of file ******************************************/

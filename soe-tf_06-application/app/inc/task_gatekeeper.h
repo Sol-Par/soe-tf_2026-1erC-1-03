@@ -32,70 +32,30 @@
  * @author : Juan Manuel Cruz <jcruz@fi.uba.ar> <jcruz@frba.utn.edu.ar>
  */
 
+#ifndef TASK_GATEKEEPER_H_
+#define TASK_GATEKEEPER_H_
+
+/********************** CPP guard ********************************************/
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /********************** inclusions *******************************************/
-/* Project includes */
-#include "main.h"
-#include "cmsis_os.h"
 
-/* Demo includes */
-#include "logger.h"
-#include "dwt.h"
+/********************** macros ***********************************************/
 
-/* Application & Tasks includes */
-#include "board.h"
-#include "app.h"
-#include "display.h"
-
-/********************** macros and definitions *******************************/
-#define G_TASK_GATEKEEPER_CNT_INI	0ul
-
-#define TASK_GATEKEEPER_DEL_ZERO		(pdMS_TO_TICKS(0ul))
-#define TASK_GATEKEEPER_DEL_MAX			(pdMS_TO_TICKS(250ul))
-
-/********************** internal data declaration ****************************/
-
-/********************** internal functions declaration ***********************/
-
-/********************** internal data definition *****************************/
+/********************** typedef **********************************************/
 
 /********************** external data declaration ****************************/
-uint32_t g_task_gatekeeper_cnt;
 
-/********************** external functions definition ************************/
-/* Task thread */
-void task_gatekeeper(void *parameters)
-{
-	/*  Declare & Initialize Task Function variables */
-	g_task_gatekeeper_cnt = G_TASK_GATEKEEPER_CNT_INI;
+/********************** external functions declaration ***********************/
+extern void task_gatekeeper(void *parameters);
 
-	display_msg_t mensaje;
-
-	displayInit(DISPLAY_CONNECTION_I2C_PCF8574_IO_EXPANDER);
-
-    xSemaphoreTake(h_i2c_tx_sem, 0);
-
-	/* Print out: Task Initialized */
-	LOGGER_INFO(" ");
-	LOGGER_INFO("  %s is running - Tick [mS] = %lu", pcTaskGetName(NULL), xTaskGetTickCount());
-
-	/* As per most tasks, this task is implemented in an infinite loop. */
-	for (;;)
-	{
-		/* Update Task Counter */
-		g_task_gatekeeper_cnt++;
-
-
-		if (xQueueReceive(h_display_queue, &mensaje, portMAX_DELAY) == pdPASS)
-		{
-			displayCharPositionWrite(mensaje.x, mensaje.y);
-			displayStringWrite(mensaje.p_text);
-
-            xSemaphoreTake(h_i2c_tx_sem, portMAX_DELAY);
-            // Si el código llegó a esta línea, significa que el IT ya termino y liberó.
-            vPortFree(mensaje.p_text);
-		}
-
-	}
+/********************** End of CPP guard *************************************/
+#ifdef __cplusplus
 }
+#endif
+
+#endif /* TASK_GATEKEEPER_H_ */
 
 /********************** end of file ******************************************/

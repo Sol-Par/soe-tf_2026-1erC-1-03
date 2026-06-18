@@ -84,14 +84,13 @@ void task_gatekeeper(void *parameters)
 		/* Update Task Counter */
 		g_task_gatekeeper_cnt++;
 
-
 		if (xQueueReceive(h_display_queue, &mensaje, portMAX_DELAY) == pdPASS)
 		{
 			displayCharPositionWrite(mensaje.x, mensaje.y);
 			displayStringWrite(mensaje.p_text);
 
             xSemaphoreTake(h_i2c_tx_sem, portMAX_DELAY);
-            // Si el código llegó a esta línea, significa que el IT ya termino y liberó.
+            // Si el código llegó a esta línea, significa que el DMA ya termino y liberó.
             vPortFree(mensaje.p_text);
 		}
 

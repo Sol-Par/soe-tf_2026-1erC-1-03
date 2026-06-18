@@ -44,35 +44,32 @@
 /* Application & Tasks includes */
 #include "board.h"
 #include "app.h"
-#include "display.h"
 
 /********************** macros and definitions *******************************/
-#define G_TASK_GATEKEEPER_CNT_INI	0ul
+#define G_TASK_B_CNT_INI	0ul
 
-#define TASK_GATEKEEPER_DEL_ZERO		(pdMS_TO_TICKS(0ul))
-#define TASK_GATEKEEPER_DEL_MAX			(pdMS_TO_TICKS(250ul))
+#define TASK_B_DEL_ZERO		(pdMS_TO_TICKS(0ul))
+#define TASK_B_DEL_MAX		(pdMS_TO_TICKS(2500ul))
 
 /********************** internal data declaration ****************************/
 
 /********************** internal functions declaration ***********************/
 
 /********************** internal data definition *****************************/
+const char *p_task_b_wait_250mS			= "   ==> Task    B - Wait:   250mS";
 
 /********************** external data declaration ****************************/
-uint32_t g_task_gatekeeper_cnt;
+uint32_t g_task_b_cnt;
 
 /********************** external functions definition ************************/
 /* Task thread */
-void task_gatekeeper(void *parameters)
+void task_b(void *parameters)
 {
 	/*  Declare & Initialize Task Function variables */
-	g_task_gatekeeper_cnt = G_TASK_GATEKEEPER_CNT_INI;
+	g_task_b_cnt = G_TASK_B_CNT_INI;
 
+	// Declaramos el mensaje que vamos a enviar
 	display_msg_t mensaje;
-
-	displayInit(DISPLAY_CONNECTION_I2C_PCF8574_IO_EXPANDER);
-
-    xSemaphoreTake(h_i2c_tx_sem, 0);
 
 	/* Print out: Task Initialized */
 	LOGGER_INFO(" ");
@@ -82,19 +79,35 @@ void task_gatekeeper(void *parameters)
 	for (;;)
 	{
 		/* Update Task Counter */
-		g_task_gatekeeper_cnt++;
+		g_task_b_cnt++;
 
+		char *p_mi_bloque = (char *)pvPortMalloc(MAX_MSG_LEN);
 
-		if (xQueueReceive(h_display_queue, &mensaje, portMAX_DELAY) == pdPASS)
+		if (p_mi_bloque != NULL){
+
+			mensaje.x = 0; // Columna 0
+			mensaje.y = 1; // Fila 2
+			mensaje.p_text = p_mi_bloque;
+
+			snprintf(mensaje.p_text, MAX_MSG_LEN, "Task B Cnt: %lu    ", g_task_b_cnt);
+
+			if (xQueueSend(h_display_queue, &mensaje, pdMS_TO_TICKS(10)) != pdPASS)
+			{
+				vPortFree(p_mi_bloque);
+				LOGGER_INFO("Task B: Cola llena, mensaje descartado y memoria liberada");
+			}
+			else
+			{
+				LOGGER_INFO("Task B: Mensaje encolado");
+			}
+		}
+		else
 		{
-			displayCharPositionWrite(mensaje.x, mensaje.y);
-			displayStringWrite(mensaje.p_text);
-
-            xSemaphoreTake(h_i2c_tx_sem, portMAX_DELAY);
-            // Si el código llegó a esta línea, significa que el IT ya termino y liberó.
-            vPortFree(mensaje.p_text);
+			LOGGER_INFO("Task B: No hay bloques libres en el Pool");
 		}
 
+		LOGGER_INFO(p_task_b_wait_250mS);
+		vTaskDelay(TASK_B_DEL_MAX);
 	}
 }
 

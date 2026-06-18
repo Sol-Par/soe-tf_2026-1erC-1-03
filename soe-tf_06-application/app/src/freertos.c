@@ -33,24 +33,19 @@
  */
 
 /********************** inclusions *******************************************/
-/* Project includes */
+/* Project includes. */
 #include "main.h"
 #include "cmsis_os.h"
 
-/* Demo includes */
+/* Demo includes. */
 #include "logger.h"
 #include "dwt.h"
 
-/* Application & Tasks includes */
+/* Application & Tasks includes. */
 #include "board.h"
 #include "app.h"
-#include "display.h"
 
 /********************** macros and definitions *******************************/
-#define G_TASK_GATEKEEPER_CNT_INI	0ul
-
-#define TASK_GATEKEEPER_DEL_ZERO		(pdMS_TO_TICKS(0ul))
-#define TASK_GATEKEEPER_DEL_MAX			(pdMS_TO_TICKS(250ul))
 
 /********************** internal data declaration ****************************/
 
@@ -58,44 +53,54 @@
 
 /********************** internal data definition *****************************/
 
-/********************** external data declaration ****************************/
-uint32_t g_task_gatekeeper_cnt;
+/********************** external data declaration *****************************/
 
 /********************** external functions definition ************************/
-/* Task thread */
-void task_gatekeeper(void *parameters)
+/* Hook Functions */
+void vApplicationIdleHook(void)
 {
-	/*  Declare & Initialize Task Function variables */
-	g_task_gatekeeper_cnt = G_TASK_GATEKEEPER_CNT_INI;
+	/* The idle task can optionally call an application defined hook (or callback)
+	   function - the idle hook. The idle task runs at the very lowest priority,
+	   so such an idle hook function will only get executed when there are no tasks
+	   of higher priority that are able to run. This makes the idle hook function
+	   an ideal place to put the processor into a low power state - providing an
+	   automatic power saving whenever there is no processing to be performed.
+	   The idle hook will only get called if configUSE_IDLE_HOOK is set to 1
+	   https://www.freertos.org/a00016.html
+	   The idle hook is called repeatedly as long as the idle task is running. It
+	   is paramount that the idle hook function does not call any API functions
+	   that could cause it to block.*/
 
-	display_msg_t mensaje;
+	/* Update Task Idle Counter */
+	g_task_idle_cnt++;
+}
 
-	displayInit(DISPLAY_CONNECTION_I2C_PCF8574_IO_EXPANDER);
+void vApplicationTickHook(void)
+{
+	/* The tick interrupt can optionally call an application defined hook (or callback)
+	   function - the tick hook.
+	   The tick hook will only get called if configUSE_TICK_HOOK is set to 1
+	   https://www.freertos.org/a00016.html
+	   vApplicationTickHook() executes from within an ISR so must be very short, not use
+	   much stack, and not call any API functions that don't end in "FromISR" or "FROM_ISR".*/
 
-    xSemaphoreTake(h_i2c_tx_sem, 0);
+	/* Update Application Tick Counter */
+	g_app_tick_cnt++;
+}
 
-	/* Print out: Task Initialized */
-	LOGGER_INFO(" ");
-	LOGGER_INFO("  %s is running - Tick [mS] = %lu", pcTaskGetName(NULL), xTaskGetTickCount());
+void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
+{
+	/* Run time stack overflow checking is performed if
+	   configCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2. This hook function is
+	   called if a stack overflow is detected.
+	   https://www.freertos.org/Stacks-and-stack-overflow-checking.html */
 
-	/* As per most tasks, this task is implemented in an infinite loop. */
-	for (;;)
-	{
-		/* Update Task Counter */
-		g_task_gatekeeper_cnt++;
+    taskENTER_CRITICAL();
+    configASSERT( 0 );   /* hang the execution for debugging purposes */
+    taskEXIT_CRITICAL();
 
-
-		if (xQueueReceive(h_display_queue, &mensaje, portMAX_DELAY) == pdPASS)
-		{
-			displayCharPositionWrite(mensaje.x, mensaje.y);
-			displayStringWrite(mensaje.p_text);
-
-            xSemaphoreTake(h_i2c_tx_sem, portMAX_DELAY);
-            // Si el código llegó a esta línea, significa que el IT ya termino y liberó.
-            vPortFree(mensaje.p_text);
-		}
-
-	}
+	/* Update Application Stack Overflow Counter */
+    g_app_stack_overflow_cnt++;
 }
 
 /********************** end of file ******************************************/

@@ -32,70 +32,54 @@
  * @author : Juan Manuel Cruz <jcruz@fi.uba.ar> <jcruz@frba.utn.edu.ar>
  */
 
+#ifndef APP_H_
+#define APP_H_
+
+/********************** CPP guard ********************************************/
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /********************** inclusions *******************************************/
-/* Project includes */
-#include "main.h"
-#include "cmsis_os.h"
 
-/* Demo includes */
-#include "logger.h"
-#include "dwt.h"
+/********************** macros ***********************************************/
+#define TASK_QTY 2ul
+#define MAX_MSG_LEN 21
+/********************** typedef **********************************************/
 
-/* Application & Tasks includes */
-#include "board.h"
-#include "app.h"
-#include "display.h"
-
-/********************** macros and definitions *******************************/
-#define G_TASK_GATEKEEPER_CNT_INI	0ul
-
-#define TASK_GATEKEEPER_DEL_ZERO		(pdMS_TO_TICKS(0ul))
-#define TASK_GATEKEEPER_DEL_MAX			(pdMS_TO_TICKS(250ul))
-
-/********************** internal data declaration ****************************/
-
-/********************** internal functions declaration ***********************/
-
-/********************** internal data definition *****************************/
+typedef struct {
+    uint8_t x;
+    uint8_t y;
+    char *p_text;
+} display_msg_t;
 
 /********************** external data declaration ****************************/
-uint32_t g_task_gatekeeper_cnt;
+extern uint32_t g_app_cnt;
+extern uint32_t g_app_task_cnt;
+extern volatile uint32_t g_app_tick_cnt;
+extern uint32_t g_task_idle_cnt;
+extern uint32_t g_app_stack_overflow_cnt;
 
-/********************** external functions definition ************************/
-/* Task thread */
-void task_gatekeeper(void *parameters)
-{
-	/*  Declare & Initialize Task Function variables */
-	g_task_gatekeeper_cnt = G_TASK_GATEKEEPER_CNT_INI;
+/* Declare a variable of type QueueHandle_t. This is used to reference queues*/
+extern QueueHandle_t h_display_queue;
 
-	display_msg_t mensaje;
+/* Declare a variable of type SemaphoreHandle_t (binary or counting) or mutex.
+ * This is used to reference the semaphore that is used to synchronize a thread
+ * with other thread or to ensure mutual exclusive access to...*/
+extern SemaphoreHandle_t h_i2c_tx_sem;
 
-	displayInit(DISPLAY_CONNECTION_I2C_PCF8574_IO_EXPANDER);
+/* Declare a variable of type TaskHandle_t. This is used to reference threads. */
+extern TaskHandle_t h_task_a;
+extern TaskHandle_t h_task_b;
 
-    xSemaphoreTake(h_i2c_tx_sem, 0);
+/********************** external functions declaration ***********************/
+extern void app_init(void);
 
-	/* Print out: Task Initialized */
-	LOGGER_INFO(" ");
-	LOGGER_INFO("  %s is running - Tick [mS] = %lu", pcTaskGetName(NULL), xTaskGetTickCount());
-
-	/* As per most tasks, this task is implemented in an infinite loop. */
-	for (;;)
-	{
-		/* Update Task Counter */
-		g_task_gatekeeper_cnt++;
-
-
-		if (xQueueReceive(h_display_queue, &mensaje, portMAX_DELAY) == pdPASS)
-		{
-			displayCharPositionWrite(mensaje.x, mensaje.y);
-			displayStringWrite(mensaje.p_text);
-
-            xSemaphoreTake(h_i2c_tx_sem, portMAX_DELAY);
-            // Si el código llegó a esta línea, significa que el IT ya termino y liberó.
-            vPortFree(mensaje.p_text);
-		}
-
-	}
+/********************** End of CPP guard *************************************/
+#ifdef __cplusplus
 }
+#endif
+
+#endif /* APP_H_ */
 
 /********************** end of file ******************************************/
