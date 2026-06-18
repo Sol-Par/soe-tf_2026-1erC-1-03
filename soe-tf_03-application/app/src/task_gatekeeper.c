@@ -67,44 +67,34 @@ void task_gatekeeper(void *parameters)
 {
 	/*  Declare & Initialize Task Function variables */
 	g_task_gatekeeper_cnt = G_TASK_GATEKEEPER_CNT_INI;
+
 	display_msg_t mensaje;
 
 	displayInit(DISPLAY_CONNECTION_I2C_PCF8574_IO_EXPANDER);
 
+    xSemaphoreTake(h_i2c_tx_sem, 0);
 
 	/* Print out: Task Initialized */
 	LOGGER_INFO(" ");
 	LOGGER_INFO("  %s is running - Tick [mS] = %lu", pcTaskGetName(NULL), xTaskGetTickCount());
 
 	/* As per most tasks, this task is implemented in an infinite loop. */
-		for (;;)
+	for (;;)
+	{
+		/* Update Task Counter */
+		g_task_gatekeeper_cnt++;
+
+		// 1. Nos bloqueamos INDEFINIDAMENTE hasta que llegue un mensaje (portMAX_DELAY)
+		// La CPU no pierde tiempo acá: si la cola está vacía, el RTOS corre otras tareas.
+		if (xQueueReceive(h_display_queue, &mensaje, portMAX_DELAY) == pdPASS)
 		{
-			/* Update Task Counter */
-			g_task_gatekeeper_cnt++;
+			displayCharPositionWrite(mensaje.x, mensaje.y);
+			displayStringWrite(mensaje.text);
 
-			// 1. Nos bloqueamos INDEFINIDAMENTE hasta que llegue un mensaje (portMAX_DELAY)
-			if (xQueueReceive(h_display_queue, &mensaje, portMAX_DELAY) == pdPASS)
-			{
-				/* === MODIFICADO PARA ACTIVIDAD 03 === */
-
-				// Posicionamos el cursor en el display (puedes mantenerlo por polling si es un comando corto,
-				// u optimizar todo el string)
-				displayCharPositionWrite(mensaje.x, mensaje.y);
-
-				// Dirección típica de tu módulo LCD I2C PCF8574 (0x27 desplazado un bit a la izquierda)
-				uint16_t lcd_addr = (0x27 << 1);
-
-				// Iniciamos la transmisión por interrupción. Esta función de la HAL no bloquea,
-				// configura los registros y retorna inmediatamente.
-				HAL_I2C_Master_Transmit_IT(&hi2c1, lcd_addr, (uint8_t*)mensaje.text, strlen(mensaje.text));
-
-				// BLOQUEO EFICIENTE: La Gatekeeper cede el procesador y se queda esperando
-				// a que la interrupción en app_it.c ejecute el xSemaphoreGiveFromISR.
-				xSemaphoreTake(h_i2c_tx_sem, portMAX_DELAY);
-
-				/* ==================================== */
-			}
+            xSemaphoreTake(h_i2c_tx_sem, portMAX_DELAY);
 		}
+
+	}
 }
 
 /********************** end of file ******************************************/

@@ -39,34 +39,34 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := soe-tf_01-application
+BUILD_ARTIFACT_NAME := soe-tf_03-application
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-soe-tf_01-application.elf \
+soe-tf_03-application.elf \
 
 MAP_FILES += \
-soe-tf_01-application.map \
+soe-tf_03-application.map \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-soe-tf_01-application.list \
+soe-tf_03-application.list \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: soe-tf_01-application.elf secondary-outputs
+main-build: soe-tf_03-application.elf secondary-outputs
 
 # Tool invocations
-soe-tf_01-application.elf soe-tf_01-application.map: $(OBJS) $(USER_OBJS) C:\Users\USUARIO\STM32CubeIDE\soe_workspace\soe-tf_01-application\STM32F103RBTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "soe-tf_01-application.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\USUARIO\STM32CubeIDE\soe_workspace\soe-tf_01-application\STM32F103RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="soe-tf_01-application.map" -Wl,--gc-sections -static -specs=rdimon.specs --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+soe-tf_03-application.elf soe-tf_03-application.map: $(OBJS) $(USER_OBJS) C:\Users\USUARIO\STM32CubeIDE\soe_workspace\soe-tf_03-application\STM32F103RBTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "soe-tf_03-application.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\USUARIO\STM32CubeIDE\soe_workspace\soe-tf_03-application\STM32F103RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="soe-tf_03-application.map" -Wl,--gc-sections -static -specs=rdimon.specs --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -75,14 +75,14 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-soe-tf_01-application.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "soe-tf_01-application.list"
+soe-tf_03-application.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "soe-tf_03-application.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) default.size.stdout soe-tf_01-application.elf soe-tf_01-application.list soe-tf_01-application.map
+	-$(RM) default.size.stdout soe-tf_03-application.elf soe-tf_03-application.list soe-tf_03-application.map
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)

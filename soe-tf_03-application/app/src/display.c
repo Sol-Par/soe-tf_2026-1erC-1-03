@@ -1,8 +1,7 @@
 //=====[Libraries]=============================================================
-#include "display.h"
 #include "main.h"
+#include "display.h"
 #include <stdbool.h>
-
 /* Demo includes */
 #include "logger.h"
 #include "dwt.h"
@@ -297,7 +296,7 @@ static void displayPinWrite( uint8_t pinName, int value )
             if ( pcf8574.displayPinD7 ) pcf8574.data |= 0b10000000;
 
             // BUGFIX: El tamaño a enviar es 1 byte, no 16.
-            HAL_I2C_Master_Transmit(&hi2c1, (uint16_t)pcf8574.address<<1, (uint8_t *)&pcf8574.data, 1, HAL_MAX_DELAY);
+            HAL_I2C_Master_Transmit_IT(&hi2c1, (uint16_t)pcf8574.address<<1, (uint8_t *)&pcf8574.data, 1);
             break;
     }
 }
