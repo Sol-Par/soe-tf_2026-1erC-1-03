@@ -1,0 +1,2 @@
+../app/src/app_it.c:63:6:app_it_init	1
+../app/src/app_it.c:74:6:HAL_I2C_MasterTxCpltCallback	3

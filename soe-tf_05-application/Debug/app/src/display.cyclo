@@ -1,0 +1,7 @@
+../app/src/display.c:109:6:displayInit	6
+../app/src/display.c:191:6:displayCharPositionWrite	5
+../app/src/display.c:227:6:displayStringWrite	2
+../app/src/display.c:234:6:displayDataWrite	1
+../app/src/display.c:240:13:displayCodeWrite	2
+../app/src/display.c:252:13:displayPinWrite	30
+../app/src/display.c:304:13:displayDataBusWrite	6
