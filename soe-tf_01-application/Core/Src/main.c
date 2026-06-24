@@ -28,6 +28,7 @@
 
 /* Application includes. */
 #include "app.h"
+#include "display.h"
 
 /* USER CODE END Includes */
 
@@ -54,6 +55,7 @@ TIM_HandleTypeDef htim2;
 UART_HandleTypeDef huart2;
 
 osThreadId defaultTaskHandle;
+
 /* USER CODE BEGIN PV */
 volatile unsigned long ulHighFrequencyTimerTicks;
 

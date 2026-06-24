@@ -1,33 +1,73 @@
-#ifndef INC_DISPLAY_H_
-#define INC_DISPLAY_H_
+#ifndef I2C_LCD_H
+#define I2C_LCD_H
 
-/********************** CPP guard ********************************************/
-#ifdef __cplusplus
-extern "C" {
+#include <stdint.h>
+
+/**
+ * @brief Includes the HAL driver present in the project
+ */
+#if __has_include("stm32f1xx_hal.h")
+	#include "stm32f1xx_hal.h"
+#elif __has_include("stm32c0xx_hal.h")
+	#include "stm32c0xx_hal.h"
+#elif __has_include("stm32g4xx_hal.h")
+	#include "stm32g4xx_hal.h"
 #endif
 
-/********************** inclusions *******************************************/
-#include <stdint.h>
-/********************** macros ***********************************************/
-
-/********************** typedef **********************************************/
-
-/********************** external data declaration ****************************/
-typedef enum {
-     DISPLAY_CONNECTION_GPIO_4BITS,
-     DISPLAY_CONNECTION_GPIO_8BITS,
-     DISPLAY_CONNECTION_I2C_PCF8574_IO_EXPANDER,
-} displayConnection_t;
-
+/**
+ * @brief Structure to hold LCD instance information
+ */
 typedef struct {
-   displayConnection_t connection;
-} display_t;
+    I2C_HandleTypeDef *hi2c;     // I2C handler for communication
+    uint8_t address;            // I2C address of the LCD
+} I2C_LCD_HandleTypeDef;
 
-/********************** external functions declaration ***********************/
-void displayInit( displayConnection_t connection );
+/**
+ * @brief Initializes the LCD.
+ * @param lcd: Pointer to the LCD handle
+ */
+void lcd_init(I2C_LCD_HandleTypeDef *lcd);
 
-void displayCharPositionWrite( uint8_t charPositionX, uint8_t charPositionY );
+/**
+ * @brief Sends a command to the LCD.
+ * @param lcd: Pointer to the LCD handle
+ * @param cmd: Command byte to send
+ */
+void lcd_send_cmd(I2C_LCD_HandleTypeDef *lcd, char cmd);
 
-void displayStringWrite( const char * str );
+/**
+ * @brief Sends data (character) to the LCD.
+ * @param lcd: Pointer to the LCD handle
+ * @param data: Data byte to send
+ */
+void lcd_send_data(I2C_LCD_HandleTypeDef *lcd, char data);
 
-#endif /* INC_DISPLAY_H_ */
+/**
+ * @brief Sends a single character to the LCD.
+ * @param lcd: Pointer to the LCD handle
+ * @param ch: Character to send
+ */
+void lcd_putchar(I2C_LCD_HandleTypeDef *lcd, char ch);
+
+/**
+ * @brief Sends a string to the LCD.
+ * @param lcd: Pointer to the LCD handle
+ * @param str: Null-terminated string to send
+ */
+void lcd_puts(I2C_LCD_HandleTypeDef *lcd, char *str);
+
+/**
+ * @brief Moves the cursor to a specific position on the LCD.
+ * @param lcd: Pointer to the LCD handle
+ * @param row: Column number (0-19)
+ * @param col: Row number (0-3)
+ */
+void lcd_pos(I2C_LCD_HandleTypeDef *lcd, int row, int col);
+
+/**
+ * @brief Clears the LCD display.
+ * @param lcd: Pointer to the LCD handle
+ */
+void lcd_clear(I2C_LCD_HandleTypeDef *lcd);
+
+#endif /* I2C_LCD_H */
