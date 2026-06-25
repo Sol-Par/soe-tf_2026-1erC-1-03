@@ -47,6 +47,7 @@
 #include "app_it.h"
 #include "task_a.h"
 #include "task_b.h"
+#include "task_gatekeeper.h"
 
 /********************** macros and definitions *******************************/
 #define G_APP_CNT_INI					0ul
@@ -122,8 +123,8 @@ void app_init(void)
     BaseType_t ret;
 
     /* Gatekeeper Task thread at priority 2 */
-    ret = xTaskCreate(task_b,							/* Pointer to the function thats implement the task. */
-					  "Gatekeeper Task",							/* Text name for the task. This is to facilitate debugging only. */
+    ret = xTaskCreate(task_gatekeeper,					/* Pointer to the function thats implement the task. */
+					  "Gatekeeper Task",				/* Text name for the task. This is to facilitate debugging only. */
 					  (configMINIMAL_STACK_SIZE),		/* Stack depth in words. */
 					  NULL,								/* We are not using the task parameter. */
 					  (tskIDLE_PRIORITY + 2ul),			/* This task will run at priority 2. */

@@ -76,8 +76,6 @@ void task_gatekeeper(void *parameters)
 	lcd1.hi2c = &hi2c1;
 	lcd1.address = 0x4E;
 	lcd_init(&lcd1);
-	lcd_pos(&lcd1, 1, 1);
-	lcd_puts(&lcd1, "Hola");
 	
 	/* Print out: Task Initialized */
 	LOGGER_INFO(" ");

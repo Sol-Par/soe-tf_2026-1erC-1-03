@@ -87,13 +87,13 @@ void task_b(void *parameters)
 		snprintf(mensaje.text, MAX_MSG_LEN, "Task B Cnt: %lu    ", g_task_b_cnt);
 
 		// 2. Enviamos el mensaje a la cola (espera máxima de 10 ticks si está llena)
-		if (xQueueSend(h_display_queue, &mensaje, pdMS_TO_TICKS(10)) == pdPASS)
+		if (xQueueSend(h_display_queue, &mensaje, portMAX_DELAY) == pdPASS)
 		{
-			LOGGER_INFO("Task B: Mensaje encolado");
+			//LOGGER_INFO("Task B: Mensaje encolado");
 		}
 
     	/* Print out: Wait 250mS */
-		LOGGER_INFO(p_task_b_wait_250mS);
+		//LOGGER_INFO(p_task_b_wait_250mS);
 		vTaskDelay(TASK_B_DEL_MAX);
 	}
 }
