@@ -77,8 +77,6 @@ void task_gatekeeper(void *parameters)
 	lcd1.address = 0x4E;
 	lcd_init(&lcd1);
 
-    xSemaphoreTake(h_i2c_tx_sem, 0);
-
 	/* Print out: Task Initialized */
 	LOGGER_INFO(" ");
 	LOGGER_INFO("  %s is running - Tick [mS] = %lu", pcTaskGetName(NULL), xTaskGetTickCount());
@@ -95,8 +93,6 @@ void task_gatekeeper(void *parameters)
 		{
 			lcd_pos(&lcd1, mensaje.y, mensaje.x);
 			lcd_puts(&lcd1, mensaje.text);
-
-            xSemaphoreTake(h_i2c_tx_sem, portMAX_DELAY);
 		}
 
 	}

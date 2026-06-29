@@ -3,6 +3,9 @@
  * Object-oriented version with multiple LCD support
  */
 
+#include "main.h"
+#include "cmsis_os.h"
+#include "app.h"
 #include "display.h"
 
 /**
@@ -24,6 +27,8 @@ void lcd_send_cmd(I2C_LCD_HandleTypeDef *lcd, char cmd)
     lcd->tx_buffer[3] = lower_nibble | 0x08;  // en=0, rs=0
 
     HAL_I2C_Master_Transmit_IT(lcd->hi2c, lcd->address, lcd->tx_buffer, 4);
+
+    xSemaphoreTake(h_i2c_tx_sem, portMAX_DELAY);
 }
 
 /**
@@ -44,7 +49,9 @@ void lcd_send_data(I2C_LCD_HandleTypeDef *lcd, char data)
     lcd->tx_buffer[2] = lower_nibble | 0x0D;  // en=1, rs=1
     lcd->tx_buffer[3] = lower_nibble | 0x09;  // en=0, rs=1
 
-    HAL_I2C_Master_Transmit_IT(lcd->hi2c, lcd->address, lcd->tx_buffer, 1);
+    HAL_I2C_Master_Transmit_IT(lcd->hi2c, lcd->address, lcd->tx_buffer, 4);
+
+    xSemaphoreTake(h_i2c_tx_sem, portMAX_DELAY);
 }
 
 /**
