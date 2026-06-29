@@ -51,7 +51,6 @@
 
 #define TASK_GATEKEEPER_DEL_ZERO		(pdMS_TO_TICKS(0ul))
 #define TASK_GATEKEEPER_DEL_MAX			(pdMS_TO_TICKS(250ul))
-#define TASK_GATEKEEPER_DEL_TEST		(pdMS_TO_TICKS(500ul))
 
 /********************** internal data declaration ****************************/
 
