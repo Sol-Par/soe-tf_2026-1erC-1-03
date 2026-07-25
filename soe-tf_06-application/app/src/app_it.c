@@ -70,10 +70,10 @@ void app_it_init(void)
 	__asm("CPSIE i");	/* enable interrupts */
 }
 
-/* Esta función la llama la HAL cuando termina una transmisión por IT (_IT) */
+/* Esta función la llama la HAL cuando termina una transmisión por DMA (_DMA) */
 void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
-    /* Verificamos que la interrupción sea de la I2C1 */
+    /* Verificamos que la interrupción (tras terminar la transmisión por DMA) sea de la I2C1 */
     if (hi2c->Instance == I2C1)
     {
         BaseType_t xHigherPriorityTaskWoken = pdFALSE;

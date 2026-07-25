@@ -51,6 +51,7 @@
 
 #define TASK_GATEKEEPER_DEL_ZERO		(pdMS_TO_TICKS(0ul))
 #define TASK_GATEKEEPER_DEL_MAX			(pdMS_TO_TICKS(250ul))
+#define TASK_GATEKEEPER_DEL_TEST		(pdMS_TO_TICKS(500ul))
 
 /********************** internal data declaration ****************************/
 
@@ -61,6 +62,8 @@
 /********************** external data declaration ****************************/
 uint32_t g_task_gatekeeper_cnt;
 
+I2C_LCD_HandleTypeDef lcd1;
+
 /********************** external functions definition ************************/
 /* Task thread */
 void task_gatekeeper(void *parameters)
@@ -70,9 +73,9 @@ void task_gatekeeper(void *parameters)
 
 	display_msg_t mensaje;
 
-	displayInit(DISPLAY_CONNECTION_I2C_PCF8574_IO_EXPANDER);
-
-    xSemaphoreTake(h_i2c_tx_sem, 0);
+	lcd1.hi2c = &hi2c1;
+	lcd1.address = 0x4E;
+	lcd_init(&lcd1);
 
 	/* Print out: Task Initialized */
 	LOGGER_INFO(" ");
@@ -84,15 +87,14 @@ void task_gatekeeper(void *parameters)
 		/* Update Task Counter */
 		g_task_gatekeeper_cnt++;
 
-
+		// 1. Nos bloqueamos INDEFINIDAMENTE hasta que llegue un mensaje (portMAX_DELAY)
+		// La CPU no pierde tiempo acá: si la cola está vacía, el RTOS corre otras tareas.
 		if (xQueueReceive(h_display_queue, &mensaje, portMAX_DELAY) == pdPASS)
 		{
-			displayCharPositionWrite(mensaje.x, mensaje.y);
-			displayStringWrite(mensaje.p_text);
+			lcd_pos(&lcd1, mensaje.y, mensaje.x);
+			lcd_puts(&lcd1, mensaje.p_text);
 
-            xSemaphoreTake(h_i2c_tx_sem, portMAX_DELAY);
-            // Si el código llegó a esta línea, significa que el IT ya termino y liberó.
-            vPortFree(mensaje.p_text);
+			vPortFree(mensaje.p_text);
 		}
 
 	}

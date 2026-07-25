@@ -68,7 +68,6 @@ void task_a(void *parameters)
 	/*  Declare & Initialize Task Function variables */
 	g_task_a_cnt = G_TASK_A_CNT_INI;
 
-	// Declaramos el mensaje que vamos a enviar
 	display_msg_t mensaje;
 
 	/* Print out: Task Initialized */

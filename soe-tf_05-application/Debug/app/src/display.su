@@ -1,7 +1,8 @@
-../app/src/display.c:109:6:displayInit	16	static
-../app/src/display.c:191:6:displayCharPositionWrite	16	static
-../app/src/display.c:227:6:displayStringWrite	16	static
-../app/src/display.c:234:6:displayDataWrite	16	static
-../app/src/display.c:240:13:displayCodeWrite	16	static
-../app/src/display.c:252:13:displayPinWrite	16	static
-../app/src/display.c:304:13:displayDataBusWrite	16	static
+../app/src/display.c:17:6:lcd_send_cmd	24	static
+../app/src/display.c:40:6:lcd_send_data	24	static
+../app/src/display.c:62:6:lcd_clear	24	static
+../app/src/display.c:82:6:lcd_pos	32	static
+../app/src/display.c:103:6:lcd_init	16	static
+../app/src/display.c:133:6:lcd_puts	16	static
+../app/src/display.c:140:6:lcd_puts_eff	24	static
+../app/src/display.c:168:6:lcd_putchar	16	static

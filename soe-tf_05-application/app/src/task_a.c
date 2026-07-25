@@ -88,7 +88,7 @@ void task_a(void *parameters)
 		snprintf(mensaje.text, MAX_MSG_LEN, "Task A Cnt: %lu    ", g_task_a_cnt);
 
 		// 2. Enviamos el mensaje a la cola (espera máxima de 10 ticks si está llena)
-		if (xQueueSend(h_display_queue, &mensaje, pdMS_TO_TICKS(10)) == pdPASS)
+		if (xQueueSend(h_display_queue, &mensaje, portMAX_DELAY) == pdPASS)
 		{
 			LOGGER_INFO("Task A: Mensaje encolado");
 		}

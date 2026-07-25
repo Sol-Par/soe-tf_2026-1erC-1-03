@@ -68,7 +68,6 @@ void task_b(void *parameters)
 	/*  Declare & Initialize Task Function variables */
 	g_task_b_cnt = G_TASK_B_CNT_INI;
 
-	// Declaramos el mensaje que vamos a enviar
 	display_msg_t mensaje;
 
 	/* Print out: Task Initialized */
@@ -91,6 +90,7 @@ void task_b(void *parameters)
 
 			snprintf(mensaje.p_text, MAX_MSG_LEN, "Task B Cnt: %lu    ", g_task_b_cnt);
 
+			// 2. Enviamos el mensaje a la cola (espera máxima de 10 ticks si está llena)
 			if (xQueueSend(h_display_queue, &mensaje, pdMS_TO_TICKS(10)) != pdPASS)
 			{
 				vPortFree(p_mi_bloque);
@@ -105,7 +105,7 @@ void task_b(void *parameters)
 		{
 			LOGGER_INFO("Task B: No hay bloques libres en el Pool");
 		}
-
+    	/* Print out: Wait 250mS */
 		LOGGER_INFO(p_task_b_wait_250mS);
 		vTaskDelay(TASK_B_DEL_MAX);
 	}
