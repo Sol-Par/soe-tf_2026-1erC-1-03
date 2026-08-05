@@ -1,0 +1,12 @@
+../Core/Src/main.c:89:5:main	8	static
+../Core/Src/main.c:180:6:SystemClock_Config	72	static
+../Core/Src/main.c:219:13:MX_I2C1_Init	8	static
+../Core/Src/main.c:253:13:MX_I2C2_Init	8	static
+../Core/Src/main.c:287:13:MX_TIM2_Init	32	static
+../Core/Src/main.c:332:13:MX_USART2_UART_Init	8	static
+../Core/Src/main.c:365:13:MX_GPIO_Init	40	static
+../Core/Src/main.c:405:6:configureTimerForRunTimeStats	4	static
+../Core/Src/main.c:410:15:getRunTimeCounterValue	4	static
+../Core/Src/main.c:424:6:StartDefaultTask	16	static
+../Core/Src/main.c:443:6:HAL_TIM_PeriodElapsedCallback	16	static
+../Core/Src/main.c:465:6:Error_Handler	4	static,ignoring_inline_asm
