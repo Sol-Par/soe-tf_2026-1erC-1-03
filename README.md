@@ -2,6 +2,8 @@
 
 ## Trabajo Final - Device Driver de FreeRTOS
 
+![Banner](Recursos/banner.png)
+
 ### 2026-1erC - 1-03
 
 ### Integrantes del grupo:
