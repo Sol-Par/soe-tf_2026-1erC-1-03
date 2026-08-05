@@ -44,14 +44,14 @@ extern "C" {
 
 /********************** macros ***********************************************/
 #define TASK_QTY 2ul
-#define MAX_MSG_LEN 21
+#define MAX_MSG_LEN 64
 /********************** typedef **********************************************/
 
 typedef struct {
     uint16_t address;
     uint8_t length;
     TaskHandle_t requester_task;
-    uint8_t rx_buffer[64];
+    uint8_t rx_buffer[MAX_MSG_LEN];
 } i2c_rx_req_t;
 
 /********************** external data declaration ****************************/
