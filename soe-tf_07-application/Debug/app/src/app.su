@@ -1,1 +1,2 @@
 ../app/src/app.c:90:6:app_init	48	static,ignoring_inline_asm
+../app/src/app.c:174:19:i2c_mem_read	40	static

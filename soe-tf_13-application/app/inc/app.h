@@ -44,7 +44,7 @@ extern "C" {
 
 /********************** macros ***********************************************/
 #define TASK_QTY 2ul
-#define MAX_MSG_LEN 400
+#define MAX_MSG_LEN 200
 /********************** typedef **********************************************/
 
 typedef struct {
@@ -75,6 +75,7 @@ extern TaskHandle_t h_task_b;
 
 /********************** external functions declaration ***********************/
 extern void app_init(void);
+extern HAL_StatusTypeDef i2c_mem_read(I2C_HandleTypeDef *hi2c, uint16_t device_address, uint16_t memory_address, uint16_t memory_add_size, uint8_t *p_rx, uint16_t size);
 
 /********************** End of CPP guard *************************************/
 #ifdef __cplusplus

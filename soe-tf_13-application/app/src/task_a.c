@@ -76,7 +76,7 @@ void task_a(void *parameters)
 	i2c_rx_req_t i2c_rx_req;
 
 	i2c_rx_req.address = 0x0000;
-	i2c_rx_req.length = 379;
+	i2c_rx_req.length = 198;
 	i2c_rx_req.requester_task = xTaskGetCurrentTaskHandle();
 
 	i2c_rx_req_t *p_req = &i2c_rx_req;

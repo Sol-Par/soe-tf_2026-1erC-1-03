@@ -174,4 +174,10 @@ void app_init(void)
 	cycle_counter_init();
 }
 
+// Función del driver I2C para leer una memoria.
+HAL_StatusTypeDef i2c_mem_read(I2C_HandleTypeDef *hi2c, uint16_t device_address, uint16_t memory_address, uint16_t memory_add_size, uint8_t *p_rx, uint16_t size)
+{
+    return HAL_I2C_Mem_Read_IT(hi2c, device_address, memory_address, memory_add_size, p_rx, size);
+}
+
 /********************** end of file ******************************************/

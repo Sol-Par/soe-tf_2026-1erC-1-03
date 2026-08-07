@@ -87,13 +87,13 @@ void task_a(void *parameters)
 		/* Update Task Counter */
 		g_task_a_cnt++;
 
-		i2c_rx_req.rx = pvPortMalloc(MAX_MSG_LEN);
+		i2c_rx_req.p_rx = pvPortMalloc(MAX_MSG_LEN);
 
-		if(i2c_rx_req.rx != NULL)
+		if(i2c_rx_req.p_rx != NULL)
 		{
 			if (xQueueSend(h_i2c_queue, &p_req, pdMS_TO_TICKS(10)) != pdPASS)
 			{
-				vPortFree(i2c_rx_req.rx);
+				vPortFree(i2c_rx_req.p_rx);
 				LOGGER_INFO("Task A: Cola llena, request descartada y memoria liberada");
 			}
 			else
@@ -107,7 +107,7 @@ void task_a(void *parameters)
 
 				// Mostrar el mensaje que se recibió.
 				LOGGER_LOG("\n--------------------------------\n");
-				LOGGER_LOG("\n%s\n", i2c_rx_req.rx);
+				LOGGER_LOG("\n%s\n", i2c_rx_req.p_rx);
 				LOGGER_LOG("\n--------------------------------\n");
 
 				i2c_rx_req.address += i2c_rx_req.length;
@@ -118,7 +118,7 @@ void task_a(void *parameters)
 				}
 
 				// Una vez que el mensaje se terminó de leer, liberar el espacio.
-				vPortFree(i2c_rx_req.rx);
+				vPortFree(i2c_rx_req.p_rx);
 			}
 		}
 		else

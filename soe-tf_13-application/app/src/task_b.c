@@ -75,8 +75,8 @@ void task_b(void *parameters)
 	// Declaramos la instancia del request a solicitar.
 	i2c_rx_req_t i2c_rx_req;
 
-	i2c_rx_req.address = 0x0000;
-	i2c_rx_req.length = 379;
+	i2c_rx_req.address = 0x00C8;
+	i2c_rx_req.length = 179;
 	i2c_rx_req.requester_task = xTaskGetCurrentTaskHandle();
 
 	i2c_rx_req_t *p_req = &i2c_rx_req;

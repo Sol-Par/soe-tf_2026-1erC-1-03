@@ -84,7 +84,7 @@ void task_gatekeeper(void *parameters)
 		// La CPU no pierde tiempo acá: si la cola está vacía, el RTOS corre otras tareas.
 		if (xQueueReceive(h_i2c_queue, &i2c_rx_req, portMAX_DELAY) == pdPASS)
 		{
-			HAL_I2C_Mem_Read_DMA(&hi2c2, 0xA0, i2c_rx_req->address, I2C_MEMADD_SIZE_16BIT, i2c_rx_req->rx_buffer, i2c_rx_req->length);
+			i2c_mem_read(&hi2c2, 0xA0, i2c_rx_req->address, I2C_MEMADD_SIZE_16BIT, i2c_rx_req->rx_buffer, i2c_rx_req->length);
 
 			// Ahora nos quedamos bloqueados en el semáforo.
 			// El callback correspondiente lo liberará cuando

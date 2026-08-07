@@ -51,7 +51,7 @@ typedef struct {
     uint16_t address;
     uint8_t length;
     TaskHandle_t requester_task;
-    uint8_t *rx;
+    uint8_t *p_rx;
 } i2c_rx_req_t;
 
 /********************** external data declaration ****************************/
@@ -74,6 +74,7 @@ extern TaskHandle_t h_task_b;
 
 /********************** external functions declaration ***********************/
 extern void app_init(void);
+extern HAL_StatusTypeDef i2c_mem_read(I2C_HandleTypeDef *hi2c, uint16_t device_address, uint16_t memory_address, uint16_t memory_add_size, uint8_t *p_rx, uint16_t size, uint32_t timeout);
 
 /********************** End of CPP guard *************************************/
 #ifdef __cplusplus
