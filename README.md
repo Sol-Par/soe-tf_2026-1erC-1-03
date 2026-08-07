@@ -20,7 +20,7 @@
 
 #### Transmisión
 
-| Actividad | Tipo            | Tiempo Bloqueante [μS] | Tiempo Total [μS] | Eficiencia CPU | Manejo de memoria    |
+| Actividad | Tipo            | Tiempo Bloqueante [μS] | Tiempo Total [μS] | Eficiencia CPU | Manejo de Memoria    |
 | :-------: | :-------------: | :--------------------: | :---------------: | :------------: | :------------------: |
 | 01        | Polling         | -                      | -                 | Baja           | Inseguro             |
 | 02        | Polling         | -                      | -                 | Baja           | Seguro (memory pool) |
@@ -33,7 +33,7 @@
 
 #### Recepción
 
-| Actividad | Tipo                     | Tiempo Bloqueante [μS] | Tiempo Total [μS] | Eficiencia CPU | Manejo de memoria    |
+| Actividad | Tipo                     | Tiempo Bloqueante [μS] | Tiempo Total [μS] | Eficiencia CPU | Manejo de Memoria    |
 | :-------: | :----------------------: | :--------------------: | :---------------: | :------------: | :------------------: |
 | 07        | Polling Known Length     | -                      | -                 | Baja           | Inseguro             |
 | 08        | Polling Known Length     | -                      | -                 | Baja           | Seguro (memory pool) |
@@ -54,7 +54,7 @@ Para medir el tiempo transcurrido entre dos instrucciones o eventos, se realizó
 // Asegurarse de incluir el archivo de DWT (Data Watchpoint and Trace).
 #include "dwt.h"
 
-# Reiniciar el contador en el punto de inicio.
+// Reiniciar el contador en el punto de inicio.
 cycle_counter_reset();
 
 // (lista de instrucciones o eventos a medir)
