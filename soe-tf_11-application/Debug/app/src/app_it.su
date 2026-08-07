@@ -1,0 +1,2 @@
+../app/src/app_it.c:61:6:app_it_init	4	static,ignoring_inline_asm
+../app/src/app_it.c:72:6:HAL_I2C_MemRxCpltCallback	24	static,ignoring_inline_asm
