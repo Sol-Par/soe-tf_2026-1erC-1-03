@@ -42,7 +42,7 @@ app/src/display.o: ../app/src/display.c ../Core/Inc/main.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h \
- ../app/inc/app.h ../app/inc/display.h
+ ../app/inc/app.h ../app/inc/display.h ../app/inc/display.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:
 ../Core/Inc/stm32f1xx_hal_conf.h:
@@ -88,4 +88,5 @@ app/src/display.o: ../app/src/display.c ../Core/Inc/main.h \
 ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h:
 ../app/inc/app.h:
+../app/inc/display.h:
 ../app/inc/display.h:

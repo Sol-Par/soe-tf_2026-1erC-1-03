@@ -1,1 +1,2 @@
-../app/src/app.c:89:6:app_init	5
+../app/src/app.c:90:6:app_init	5
+../app/src/app.c:175:6:i2c_lcd_puts_x_y	1

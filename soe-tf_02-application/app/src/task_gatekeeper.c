@@ -90,8 +90,7 @@ void task_gatekeeper(void *parameters)
 		// La CPU no pierde tiempo acá: si la cola está vacía, el RTOS corre otras tareas.
 		if (xQueueReceive(h_display_queue, &mensaje, portMAX_DELAY) == pdPASS)
 		{
-			lcd_pos(&lcd1, mensaje.y, mensaje.x);
-			lcd_puts(&lcd1, mensaje.p_text);
+			i2c_lcd_puts_x_y(&lcd1, mensaje.x, mensaje.y, mensaje.p_text);
 
 			vPortFree(mensaje.p_text);
 		}

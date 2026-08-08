@@ -41,6 +41,7 @@ extern "C" {
 #endif
 
 /********************** inclusions *******************************************/
+#include "display.h"
 
 /********************** macros ***********************************************/
 #define TASK_QTY 2ul
@@ -73,6 +74,7 @@ extern TaskHandle_t h_task_b;
 
 /********************** external functions declaration ***********************/
 extern void app_init(void);
+extern void i2c_lcd_puts_x_y(I2C_LCD_HandleTypeDef *lcd, int col, int row, char *str);
 
 /********************** End of CPP guard *************************************/
 #ifdef __cplusplus

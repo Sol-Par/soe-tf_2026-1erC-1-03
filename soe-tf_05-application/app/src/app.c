@@ -48,6 +48,7 @@
 #include "task_a.h"
 #include "task_b.h"
 #include "task_gatekeeper.h"
+#include "display.h"
 
 /********************** macros and definitions *******************************/
 #define G_APP_CNT_INI					0ul
@@ -171,6 +172,14 @@ void app_init(void)
 
 	/* Init Cycle Counter */
 	cycle_counter_init();
+}
+
+// Función del driver I2C para imprimir un mensaje
+// en la posición (x,y) de una pantalla LCD.
+void i2c_lcd_puts_x_y(I2C_LCD_HandleTypeDef *lcd, int col, int row, char *str)
+{
+	lcd_pos(lcd, row, col);
+	lcd_puts_eff(lcd, str);
 }
 
 /********************** end of file ******************************************/

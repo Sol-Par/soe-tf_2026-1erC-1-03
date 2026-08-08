@@ -1,1 +1,2 @@
-../app/src/app.c:91:6:app_init	48	static,ignoring_inline_asm
+../app/src/app.c:92:6:app_init	48	static,ignoring_inline_asm
+../app/src/app.c:179:6:i2c_lcd_puts_x_y	24	static
