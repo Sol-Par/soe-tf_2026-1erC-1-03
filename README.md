@@ -23,7 +23,7 @@ El objetivo principal de este Trabajo Final es diseñar e implementar la evoluci
 
 ### Resumen de Actividades
 
-## Transmisión
+#### Transmisión
 
 * **Actividad 01 (Polling):** Transmisión de mensajes paso por valor utilizando colas de FreeRTOS (`xQueue`). La `Gatekeeper Task` ejecuta la transferencia mediante espera activa (*Polling*) sobre el bus.
 * **Actividad 02 (Memory Pool & Polling):** Transmisión paso por referencia. Las tareas asignan memoria dinámica (`pvPortMalloc`), envían el puntero por la cola y el `Gatekeeper` transmite por Polling para luego liberar la memoria (`vPortFree`).
@@ -32,7 +32,7 @@ El objetivo principal de este Trabajo Final es diseñar e implementar la evoluci
 * **Actividad 05 (DMA):** Transmisión por Direct Memory Access (DMA) con paso por valor. El hardware descarga a la CPU de la transferencia byte a byte, notificando su finalización mediante la ISR de DMA.
 * **Actividad 06 (Memory Pool & DMA):** Máxima optimización en transmisión. Combina el paso por referencia con transferencias por DMA, sincronizando la liberación del bloque del *Heap* mediante semáforos e interrupciones de DMA.
 
-## Recepción
+#### Recepción
 
 * **Actividad 07 (Known Length & Polling):** Recepción de tramas de longitud fija mediante espera activa (*Polling*), utilizando paso por valor para comunicar los datos recibidos.
 * **Actividad 08 (Known Length & Memory Pool & Polling):** Recepción de longitud conocida por Polling. Se solicita memoria en el receptor/Gatekeeper para almacenar los datos recibidos y transmitir su puntero por la cola.
