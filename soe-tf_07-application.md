@@ -112,8 +112,3 @@ Esta limitación en el uso de CPU será el principal punto a mejorar al evolucio
 2. **Sincronización:** la cola y la Gatekeeper permiten serializar las solicitudes de distintas tareas y evitar accesos concurrentes al periférico I²C.
 
 3. **Protección de memoria:** cada solicitud mantiene su propio buffer de recepción, que solamente es utilizado por la tarea una vez que la Gatekeeper notifica que la operación terminó.
-
-```
-```
-
-...
