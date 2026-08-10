@@ -133,6 +133,3 @@ La modificación afecta principalmente a la administración de memoria, el mecan
 2. **Tiempos de bloqueo:** se conserva la sincronización mediante Queue + Gatekeeper + Task Notification, manteniendo a las tareas solicitantes bloqueadas hasta que sus datos estén disponibles.
 
 3. **Protección de memoria:** los buffers pasan a reservarse dinámicamente y deben liberarse explícitamente una vez utilizados, permitiendo un uso más flexible de la memoria pero requiriendo controlar correctamente errores de reserva y posibles memory leaks.
-
-```
-```
