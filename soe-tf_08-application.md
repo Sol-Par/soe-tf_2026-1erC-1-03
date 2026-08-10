@@ -50,11 +50,7 @@ i2c_rx_req.p_rx = pvPortMalloc(MAX_MSG_LEN);
 
 if (i2c_rx_req.p_rx != NULL)
 {
-    /* Enviar request */
-}
-else
-{
-    LOGGER_INFO("Task A: ¡Error! Out of Heap Memory");
+   ...
 }
 ```
 
@@ -94,10 +90,6 @@ Una vez recibida la notificación y procesados los datos, la tarea libera el blo
 
 ```c
 ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-
-LOGGER_LOG("\n%s\n", i2c_rx_req.p_rx);
-
-/* El buffer ya no es necesario */
 vPortFree(i2c_rx_req.p_rx);
 ```
 
