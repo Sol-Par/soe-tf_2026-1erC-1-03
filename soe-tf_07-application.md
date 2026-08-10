@@ -101,15 +101,6 @@ HAL_I2C_Mem_Read(
 
 Por lo tanto, mientras las tareas solicitantes permanecen correctamente bloqueadas por FreeRTOS, la **Gatekeeper permanece ocupada durante toda la transferencia I²C**.
 
-| Aspecto              | Implementación    |
-| -------------------- | ----------------- |
-| Comunicación         | I²C               |
-| Recepción            | Polling           |
-| Acceso al periférico | Gatekeeper Task   |
-| Solicitudes          | Cola de FreeRTOS  |
-| Finalización         | Task Notification |
-| Buffer Rx            | Uno por tarea     |
-
 Esta limitación en el uso de CPU será el principal punto a mejorar al evolucionar el driver hacia una implementación basada en interrupciones.
 
 ---
