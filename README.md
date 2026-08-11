@@ -73,29 +73,37 @@ A continuación se presentan las métricas de rendimiento obtenidas durante la c
 
 #### Transmisión
 
-| Actividad | Tipo            | Tiempo Bloqueante [μS] | Tiempo Total [μS] | Eficiencia CPU | Manejo de Memoria    |
-| :-------: | :-------------: | :--------------------: | :---------------: | :------------: | :------------------: |
-| 01        | Polling         | -                      | -                 | Baja           | Inseguro             |
-| 02        | Polling         | -                      | -                 | Baja           | Seguro (Memory Pool) |
-| 03        | Interrupt       | -                      | -                 | Media          | Inseguro             |
-| 04        | Interrupt       | -                      | -                 | Media          | Seguro (Memory Pool) |
-| 05        | DMA             | -                      | -                 | Alta           | Inseguro             |
-| 06        | DMA             | -                      | -                 | Alta           | Seguro (Memory Pool) |
+| Actividad | Tipo            | Espera Bloqueante [μs/byte] | Tiempo Total [μs/byte] | Eficiencia CPU | Manejo de Memoria    |
+| :-------: | :-------------: | :-------------------------: | :--------------------: | :------------: | :------------------: |
+| 01        | Polling         | 465                         | 473                    | Baja           | Inseguro             |
+| 02        | Polling         | 462                         | 473                    | Baja           | Seguro (Memory Pool) |
+| 03        | Interrupt       | 4                           | 488                    | Media          | Inseguro             |
+| 04        | Interrupt       | 4                           | 489                    | Media          | Seguro (Memory Pool) |
+| 05        | DMA             | 9                           | 367                    | Alta           | Inseguro             |
+| 06        | DMA             | 9                           | 368                    | Alta           | Seguro (Memory Pool) |
 
 <br>
 
 #### Recepción
 
-| Actividad | Tipo                     | Tiempo Bloqueante [μS] | Tiempo Total [μS] | Eficiencia CPU | Manejo de Memoria    |
-| :-------: | :----------------------: | :--------------------: | :---------------: | :------------: | :------------------: |
-| 07        | Polling Known Length     | -                      | -                 | Baja           | Inseguro             |
-| 08        | Polling Known Length     | -                      | -                 | Baja           | Seguro (Memory Pool) |
-| 09        | Interrupt Known Length   | -                      | -                 | Media          | Inseguro             |
-| 10        | Interrupt Known Length   | -                      | -                 | Media          | Seguro (Memory Pool) |
-| 11        | Interrupt Unknown Length | -                      | -                 | Media          | Seguro (Memory Pool) |
-| 12        | DMA Known Length         | -                      | -                 | Alta           | Inseguro             |
-| 13        | DMA Known Length         | -                      | -                 | Alta           | Seguro (Memory Pool) |
-| 14        | DMA Unknown Length       | -                      | -                 | Alta           | Seguro (Memory Pool) |
+| Actividad | Tipo                     | Espera Bloqueante [μs/byte] | Tiempo Total [μs/byte] | Eficiencia CPU | Manejo de Memoria    |
+| :-------: | :----------------------: | :-------------------------: | :--------------------: | :------------: | :------------------: |
+| 07        | Polling Known Length     | 102                         | 103                    | Baja           | Inseguro             |
+| 08        | Polling Known Length     | 102                         | 102                    | Baja           | Seguro (Memory Pool) |
+| 09        | Interrupt Known Length   | 4                           | 101                    | Media          | Inseguro             |
+| 10        | Interrupt Known Length   | 4                           | 100                    | Media          | Seguro (Memory Pool) |
+| 11        | Interrupt Unknown Length | 5                           | 550                    | Media          | Seguro (Memory Pool) |
+| 12        | DMA Known Length         | 6                           | 31                     | Alta           | Inseguro             |
+| 13        | DMA Known Length         | 6                           | 35                     | Alta           | Seguro (Memory Pool) |
+| 14        | DMA Unknown Length       | 8                           | 584                    | Alta           | Seguro (Memory Pool) |
+
+<br>
+
+Se concluye a partir de los resultados que la comunicación por _polling_ resulta ser la más ineficiente en términos de uso de la CPU, presentando un tiempo bloqueante mucho mayor al de las otras alternativas. En este sentido, se puede observar que la espera bloqueante coincide prácticamente con el tiempo total del proceso.
+
+En las actividades que aprovechan el uso de interrupciones y del módulo de DMA, se midieron esperas bloqueantes ínfimas y tiempos totales comparables o menores a los casos de _polling_, la única excepción siendo el tiempo total observado en las actividades 11 y 14. La desmejora en estos casos se atribuye al modo en que se lee de a 1 byte a la vez, dado el desconocimiento a priori de la longitud del mensaje a recibir.
+
+El método de transmisión y recepción por DMA se destaca por sobre la vía de IT en mayor medida cuando los mensajes a comunicar poseen una longitud considerable en bytes. Esto se debe a que, mientras que las interrupciones producen un uso periódico de la CPU que crece proporcionalmente con el número de bytes, la comunicación por DMA únicamente requiere dos intervenciones indepentiemente de la longitud, siendo estas cuando comienza la transferencia y cuando termina.
 
 ---
 
@@ -128,6 +136,14 @@ uint32_t time = cycle_counter_get_time_us();
 // y leer el valor en 'Expressions').
 LOGGER_INFO("Tiempo = %lu us", time);
 ```
+
+<br>
+
+Para la medición de las **esperas bloqueantes**, la instrucción a medir fue la primitiva de transmisión/recepción propia de la HAL (`HAL_I2C_Master_Transmit_XX` en un caso y `HAL_I2C_Mem_Read_XX` en el otro).
+
+Para la obtención de los **tiempos totales**, se midió el tiempo de una transmisión/recepción completa, incluyendo el tiempo que transcurre la tarea _gatekeeper_ bloqueada en un semáforo, en los casos en que lo hay. Esta espera, sin embargo, no es bloqueante en tanto que permite que se ejecuten otras tareas (la tarea _IDLE_, en ausencia de otras) mientras finaliza el proceso de comunicación.
+
+En todos los casos, se normalizó el tiempo por el tamaño del mensaje a transmitir/recibir en bytes, para que las comparaciones resulten verdaderamente cualitativas. En el caso de **transmisión** (actividades 01 a 06), el mensaje siempre fue de 18 bytes, incluyendo 1 byte para indicar la posición del cursor y 17 bytes de mensaje. En el caso de **recepción** (actividades 07 a 14) el tamaño del mensaje recibido difiere entre actividades, y es plenamente variable en las actividades 11 y 14. En las actividades donde se recibe por DMA, se priorizó la lectura de mensajes largos para aprovechar de forma más plena la ventaja del método.
 
 ---
 
