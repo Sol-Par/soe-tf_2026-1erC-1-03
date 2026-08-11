@@ -20,7 +20,15 @@
 El objetivo principal de este Trabajo Final es diseñar e implementar la evolución de un Device Driver modular en FreeRTOS sobre microcontroladores STM32. A lo largo de 14 actividades, se integran paulatinamente distintas estrategias de comunicación física (Polling, Interrupciones y DMA) junto con técnicas de gestión de memoria dinámica (*Memory Pool* por referencia) y primitivas de sincronización (*Gatekeeper Task*, Colas y Semáforos).
 
 ---
+### Entorno de Desarrollo y Hardware
 
+* **Microcontrolador / Placa:** STM32 (NUCLEO-F446RE) / Núcleo ARM Cortex-M.
+* **Periférico / Salida:** Display LCD (con adaptador I2C PCF8574) / Memoria EEPROM I2C.
+* **Sistema Operativo:** FreeRTOS Kernel.
+* **IDE & Cadena de Herramientas:** STM32CubeIDE / GCC ARM Embedded Toolchain.
+* **Perfilado y Medición:** Unidad DWT (*Data Watchpoint and Trace*) para la medición precisa de tiempos de ejecución en microsegundos.
+
+---
 ### Resumen de Actividades
 
 #### Transmisión
