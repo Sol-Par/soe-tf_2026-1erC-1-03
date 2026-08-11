@@ -52,16 +52,6 @@ El objetivo principal de este Trabajo Final es diseñar e implementar la evoluci
 * **[Actividad 14](./soe-tf_14-application.md) (Unknown Length & Memory Pool & DMA):** Máxima optimización en recepción. Integración de DMA con interrupción por *IDLE Line* y gestión de memoria dinámica para capturar tramas de tamaño variable con costo mínimo de CPU.
 ---
 
-### Entorno de Desarrollo y Hardware
-
-* **Microcontrolador / Placa:** STM32 (NUCLEO-F446RE) / Núcleo ARM Cortex-M.
-* **Periférico / Salida:** Display LCD (con adaptador I2C PCF8574) / Memoria EEPROM I2C.
-* **Sistema Operativo:** FreeRTOS Kernel.
-* **IDE & Cadena de Herramientas:** STM32CubeIDE / GCC ARM Embedded Toolchain.
-* **Perfilado y Medición:** Unidad DWT (*Data Watchpoint and Trace*) para la medición precisa de tiempos de ejecución en microsegundos.
-
----
-
 ### Funciones de Driver Implementadas
 
 ```c
