@@ -53,6 +53,7 @@ El objetivo principal de este Trabajo Final es diseñar e implementar la evoluci
 ---
 
 ### Funciones de Driver Implementadas
+El driver expone una API estandarizada encargada de gestionar la comunicación física a través del bus I2C. Estas funciones abstraen tanto la escritura en el display LCD como la lectura de bloques de datos en la memoria EEPROM, integrando internamente las llamadas a la HAL y los mecanismos de sincronización (espera activa, interrupciones o DMA).
 
 ```c
 // Función del driver I2C para imprimir un mensaje
@@ -68,6 +69,7 @@ HAL_StatusTypeDef i2c_mem_read(I2C_HandleTypeDef *hi2c, uint16_t device_address,
 ---
 
 ### Cuadro Comparativo
+A continuación se presentan las métricas de rendimiento obtenidas durante la caracterización de cada actividad. El **Tiempo Bloqueante** representa el tiempo durante el cual la CPU permanece dedicada exclusivamente a la operación de I/O (impedida de ejecutar otras tareas), mientras que el **Tiempo Total** contempla la duración completa de la transacción física sobre el bus.
 
 #### Transmisión
 
@@ -100,6 +102,14 @@ HAL_StatusTypeDef i2c_mem_read(I2C_HandleTypeDef *hi2c, uint16_t device_address,
 ### Obtención de Tiempos
 
 Para medir el tiempo transcurrido entre dos instrucciones o eventos, se realizó el siguiente procedimiento:
+
+Para medir el tiempo transcurrido entre eventos, se empleó la unidad **DWT (Data Watchpoint and Trace)** propia del núcleo ARM Cortex-M. Este módulo cuenta con un contador de ciclos de reloj de alta resolución (`CYCCNT`) que permite calcular con precisión de microsegundos la latencia y el tiempo bloqueante de la CPU en cada operación del driver.
+
+### Procedimiento de Medición
+
+1. **Inicialización:** Se habilita e inicializa el contador de ciclos DWT antes de comenzar la ejecución de las tareas.
+2. **Reset:** Inmediatamente antes de iniciar la función a caracterizar (o la transmisión/recepción), se reinicia el contador mediante `cycle_counter_reset()`.
+3. **Captura:** Una vez finalizado el bloque de código o liberado el recurso, se obtiene el tiempo transcurrido con `cycle_counter_get_time_us()`.
 
 ```c
 // Asegurarse de incluir el archivo de DWT (Data Watchpoint and Trace).
