@@ -25,7 +25,7 @@ El objetivo principal de este Trabajo Final es diseñar e implementar la evoluci
 
 #### Transmisión
 
-* **Actividad 01 (./soe-tf_01-application.md) (Polling):** Transmisión de mensajes paso por valor utilizando colas de FreeRTOS (`xQueue`). La `Gatekeeper Task` ejecuta la transferencia mediante espera activa (*Polling*) sobre el bus.
+* [**Actividad 01] (./soe-tf_01-application.md) (Polling):** Transmisión de mensajes paso por valor utilizando colas de FreeRTOS (`xQueue`). La `Gatekeeper Task` ejecuta la transferencia mediante espera activa (*Polling*) sobre el bus.
 * **Actividad 02 (Memory Pool & Polling):** Transmisión paso por referencia. Las tareas asignan memoria dinámica (`pvPortMalloc`), envían el puntero por la cola y el `Gatekeeper` transmite por Polling para luego liberar la memoria (`vPortFree`).
 * **Actividad 03 (Interrupt):** Transmisión paso por valor asistida por interrupciones (IT). La `Gatekeeper Task` inicia la transferencia y se bloquea en un semáforo binario hasta que la ISR de fin de transmisión lo entrega.
 * **Actividad 04 (Memory Pool & Interrupt):** Transmisión por interrupciones combinada con paso por referencia. La liberación de memoria dinámica se realiza en el `Gatekeeper` recién al despertar tras la interrupción del hardware.
