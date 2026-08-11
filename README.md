@@ -44,6 +44,16 @@ El objetivo principal de este Trabajo Final es diseñar e implementar la evoluci
 * **[Actividad 14](./soe-tf_14-application.md) (Unknown Length & Memory Pool & DMA):** Máxima optimización en recepción. Integración de DMA con interrupción por *IDLE Line* y gestión de memoria dinámica para capturar tramas de tamaño variable con costo mínimo de CPU.
 ---
 
+### Entorno de Desarrollo y Hardware
+
+* **Microcontrolador / Placa:** STM32 (NUCLEO-F446RE) / Núcleo ARM Cortex-M.
+* **Periférico / Salida:** Display LCD (con adaptador I2C PCF8574) / Memoria EEPROM I2C.
+* **Sistema Operativo:** FreeRTOS Kernel.
+* **IDE & Cadena de Herramientas:** STM32CubeIDE / GCC ARM Embedded Toolchain.
+* **Perfilado y Medición:** Unidad DWT (*Data Watchpoint and Trace*) para la medición precisa de tiempos de ejecución en microsegundos.
+
+---
+
 ### Funciones de Driver Implementadas
 
 ```c
@@ -112,3 +122,15 @@ LOGGER_INFO("Tiempo = %lu us", time);
 ```
 
 ---
+
+### Conclusiones 
+
+A lo largo del desarrollo del Trabajo Final se pudieron validar de forma práctica las diferencias de rendimiento entre las distintas arquitecturas de un Device Driver en FreeRTOS:
+
+* **Gestión de Memoria (Paso por Valor vs. Memory Pool):** Pasar datos por valor a través de colas (`xQueue`) es más simple de implementar, pero requiere copiar todo el contenido del buffer en cada envío. La implementación de *Memory Pool* (paso por referencia) mediante `pvPortMalloc` y `vPortFree` demostró ser la alternativa más eficiente, ya que solo se transmiten punteros y se evita sobrecargar la memoria y los ciclos de CPU.
+* **Mecanismos de Comunicación (Polling vs. Interrupciones vs. DMA):**
+  * **Polling:** Consume el 100% de la CPU en esperas activas, impidiendo que el RTOS aproveche el tiempo para ejecutar otras tareas.
+  * **Interrupciones (IT):** Liberan a la CPU durante la transferencia, bloqueando la tarea en un semáforo hasta recibir la notificación del hardware.
+  * **DMA:** Ofrece el mejor rendimiento general, permitiendo que la transferencia entre la memoria y el periférico ocurra de forma autónoma sin intervención del procesador.
+
+En conclusión, la integración de *Memory Pool* junto con transferencias asistidas por DMA y sincronización por semáforos/colas consolida la arquitectura ideal para el diseño de controladores en sistemas embebidos de tiempo real, logrando un equilibrio óptimo entre eficiencia de CPU, uso racional de RAM y determinismo en el sistema.
