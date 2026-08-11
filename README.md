@@ -21,7 +21,7 @@ El objetivo principal de este Trabajo Final es diseñar e implementar la evoluci
 
 ---
 
-#### Resumen de Actividades
+### Resumen de Actividades
 
 #### Transmisión
 
