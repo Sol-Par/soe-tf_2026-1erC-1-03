@@ -103,7 +103,7 @@ Se concluye a partir de los resultados que la comunicación por _polling_ result
 
 En las actividades que aprovechan el uso de interrupciones y del módulo de DMA, se midieron esperas bloqueantes ínfimas y tiempos totales comparables o menores a los casos de _polling_, la única excepción siendo el tiempo total observado en las actividades 11 y 14. La desmejora en estos casos se atribuye al modo en que se lee de a 1 byte a la vez, dado el desconocimiento a priori de la longitud del mensaje a recibir.
 
-El método de transmisión y recepción por DMA se destaca por sobre la vía de IT en mayor medida cuando los mensajes a comunicar poseen una longitud considerable en bytes. Esto se debe a que, mientras que las interrupciones producen un uso periódico de la CPU que crece proporcionalmente con el número de bytes, la comunicación por DMA únicamente requiere dos intervenciones indepentiemente de la longitud, siendo estas cuando comienza la transferencia y cuando termina.
+El método de transmisión y recepción por DMA se destaca por sobre la vía de IT en mayor medida cuando los mensajes a comunicar poseen una longitud considerable en bytes. Esto se debe a que, mientras que las interrupciones producen un uso periódico de la CPU que crece proporcionalmente con el número de bytes, la comunicación por DMA únicamente requiere dos intervenciones independientemente de la longitud, siendo estas cuando comienza la transferencia y cuando termina.
 
 ---
 
